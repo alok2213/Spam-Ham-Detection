@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spam checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- url_for('static', ...) = Flask ko batata hai static/ folder se file uthao -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page">
+
+    <header class="head">
+      <h1>SMS spam checker</h1>
+      <p>Paste a text message to see whether it looks like spam.</p>
+    </header>
+
+    <main class="layout">
+
+      <!-- LEFT: user input -->
+      <section class="panel">
+        <label for="message">Message</label>
+        <textarea id="message" rows="8" maxlength="2000" placeholder="Paste the SMS here"></textarea>
+
+        <div class="row">
+          <span id="count" class="note">0 / 2000</span>
+          <div class="actions">
+            <button id="clear" class="btn secondary" type="button">Clear</button>
+            <button id="check" class="btn primary" type="button">Check message</button>
+          </div>
+        </div>
+
+        <p class="note examples-title">Or try an example</p>
+        <div class="examples">
+          <button class="example" type="button" data-text="WINNER!! As a valued network customer you have been selected to receive a £900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.">Prize offer</button>
+          <button class="example" type="button" data-text="URGENT! Your mobile number has been awarded a £2000 bonus caller prize. Call 09058094455 from land line. Claim 3030.">Urgent claim</button>
+          <button class="example" type="button" data-text="Ok I will call you after the meeting, don't worry about it">Casual chat</button>
+          <button class="example" type="button" data-text="Can you send me the notes from yesterday's class? I missed it">Class notes</button>
+        </div>
+
+        <p id="error" class="error" hidden></p>
+      </section>
+
+      <!-- RIGHT: result from Flask -->
+      <section class="panel" aria-live="polite">
+        <div id="empty" class="empty">
+          <p>No result yet.</p>
+          <p class="note">Enter a message and select “Check message”.</p>
+        </div>
+
+        <div id="result" hidden>
+          <p class="note">Result</p>
+          <p id="verdict" class="verdict"></p>
+          <p id="confidence" class="note"></p>
+
+          <div class="meter">
+            <div class="meter-label"><span>Spam probability</span><strong id="percent"></strong></div>
+            <div class="bar"><div id="fill" class="fill"></div></div>
+          </div>
+
+          <div id="wordsBox" hidden>
+            <h2>Words that influenced the result</h2>
+            <div id="words" class="words"></div>
+            <p class="note legend">
+              <span class="swatch spam"></span>points to spam
+              <span class="swatch ham"></span>points to not spam
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- meta aata hai app.py ke index() se: render_template("index.html", meta=meta) -->
+    <footer class="note">
+      Model: {{ meta.model }}, trained on {{ '{:,}'.format(meta.messages) }} messages.
+      Test accuracy {{ '%.1f'|format(meta.accuracy * 100) }}%, precision {{ '%.1f'|format(meta.precision * 100) }}%.
+    </footer>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
